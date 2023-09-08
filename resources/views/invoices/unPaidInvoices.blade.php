@@ -81,6 +81,8 @@
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
 
+                    <a class="modal-effect btn btn-sm btn-primary" href="{{ route('export_Unpaid_invoices') }}"
+                       style="color:white"><i class="fas fa-file-download"></i>&nbsp;Import Excel</a>
 
                 </div>
                 <div class="card-body">
@@ -175,16 +177,6 @@
                                                     </form>
 
 
-
-
-
-
-
-
-<!--                                                    <a class="dropdown-item" href="Print_invoice/{{ $invoice->id }}"><i
-                                                            class="text-success fas fa-print"></i>
-                                                        &nbsp;&nbsp;طباعة الفاتورة
-                                                    </a>-->
 
                                                 </div>
                                             </div>

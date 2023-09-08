@@ -11,6 +11,7 @@ use App\Models\Invoices;
 class AddInvoice extends Notification
 {
     use Queueable;
+    public $id;
 
     /**
      * Create a new notification instance.
@@ -35,12 +36,15 @@ class AddInvoice extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = "http://127.0.0.1:8000/invoice_details/".$this->id ;
+
+        //$url = "http://127.0.0.1:8000/invoice_details/".$this->id ;
+        $url = route('invoice_details.show',['invoice_detail'=>$this->id]);
         return (new MailMessage)
-                    ->subject('تم إضافة فاتورة جديدة')
-                    ->line('إضافة فاتورة جديدة')
-                    ->action('عرض الفاتورة', url('/'))
-                    ->line('شكرا لأستخدامك مورا لأدارة الفواتير');
+                    ->greeting('Welcome ')
+                    ->subject('A new invoice has been added ')
+                    ->line('create new invoice')
+                    ->action('View Invoice',$url)
+                    ->line('thank you for using our application');
     }
 
     /**

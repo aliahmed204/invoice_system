@@ -31,7 +31,7 @@
                   <div class="card-header pb-0">
                               <div class="d-flex justify-content-between">
 
-                                  <div class="col-sm-3 col-md-2 col-xl-3">
+                                  <div class="col-sm-3 col-md-3 col-xl-3">
                                       <a class="modal-effect btn btn-outline-primary btn-block" data-effect="effect-scale" data-toggle="modal" href="#modaldemo8"><i class="fa fa-plus ml-1">Add Product </i></a>
                                   </div>
 
@@ -168,6 +168,7 @@
         </div>
     </div>
 
+        @if(isset($product))
         <!-- edit -->
         <div class="modal fade" id="edit_Product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
              aria-hidden="true">
@@ -214,6 +215,7 @@
                 </div>
             </div>
         </div>
+        @endif
 				<!-- row closed -->
         </div>
 			<!-- Container closed -->

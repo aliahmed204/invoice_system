@@ -86,6 +86,8 @@
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
 
+                    <a class="modal-effect btn btn-sm btn-primary" href="{{ route('export_paid_invoices') }}"
+                       style="color:white"><i class="fas fa-file-download"></i>&nbsp;Import Excel</a>
 
                 </div>
                 <div class="card-body">

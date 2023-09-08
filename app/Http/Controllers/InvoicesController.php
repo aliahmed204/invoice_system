@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InvoicesExport;
+use App\Exports\PaidInvoicesExport;
+use App\Exports\UnpaidInvoicesExport;
 use App\Models\invoice_attachment;
 use App\Models\invoice_detail;
 use App\Models\Invoices;
 use App\Models\Product;
 use App\Models\Section;
+use App\Models\User;
+use App\Notifications\AddInvoice;
+use App\Notifications\NewInvoiceNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InvoicesController extends Controller
 {
@@ -37,7 +45,6 @@ class InvoicesController extends Controller
      */
     public function store(Request $request)
     {
-
         // create new invoice
         Invoices::create([
          "invoice_number"     => $request->invoice_number ,
@@ -55,7 +62,6 @@ class InvoicesController extends Controller
          "value_status"       => 2,
          "note"               => $request->note
         ]);
-
             // create invoice details throw last id add to invoices table
         $newInvoice_id = Invoices::latest()->first()->id;
         invoice_detail::create([
@@ -97,6 +103,15 @@ class InvoicesController extends Controller
 
             $file->move(public_path('attachments/'.$request->invoice_number),$unique_name);
         }
+        $invoice = Invoices::latest()->first(); // that attach related to
+
+        $user = User::first();
+        Notification::send($user , new AddInvoice($invoice->id));
+
+        $users = User::get(); // to all users
+        Notification::send($users , new NewInvoiceNotification($invoice));
+
+
 
         return redirect()->route('invoices.index')->with('success','invoice added successfully');
 
@@ -105,9 +120,13 @@ class InvoicesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Invoices $invoices)
+    public function allRead( )
     {
-        //
+        foreach (\auth()->user()->unreadNotifications as $notification) {
+            $notification->markAsRead();
+        }
+        return back();
+
     }
 
     /**
@@ -236,7 +255,16 @@ class InvoicesController extends Controller
         return view('invoices.printInvoice',compact('invoices'));
     }
 
+    public function export(){
 
+        return Excel::download(new InvoicesExport, 'invoices.xlsx');
+    }
+    public function export_paid(){
+        return Excel::download(new PaidInvoicesExport, date('y-m-d',strtotime(now())).'PaidInvoices.xlsx');
+    }
+    public function export_Unpaid(){
+        return Excel::download(new UnpaidInvoicesExport, date('y-m-d',strtotime(now())).'UnPaidInvoices.xlsx');
+    }
 
 
     public function getProducts($id){

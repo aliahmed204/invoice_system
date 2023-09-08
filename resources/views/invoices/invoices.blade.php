@@ -90,6 +90,7 @@
         </script>
     @endif
 
+
     <!-- row -->
     <div class="row">
         <!--div-->
@@ -102,7 +103,7 @@
 
 
 
-                        <a class="modal-effect btn btn-sm btn-primary" href="{{ url('export_invoices') }}"
+                        <a class="modal-effect btn btn-sm btn-primary" href="{{ route('export_invoices') }}"
                            style="color:white"><i class="fas fa-file-download"></i>&nbsp;Import Excel</a>
 
 

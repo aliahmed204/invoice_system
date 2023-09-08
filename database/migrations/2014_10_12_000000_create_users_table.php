@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // add new for permissions
+            $table->text('roles_name'); // well converted to array in the model of users
+            $table->enum('status',['active','inactive']);
+
             $table->rememberToken();
             $table->timestamps();
         });

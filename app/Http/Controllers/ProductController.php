@@ -30,10 +30,7 @@ class ProductController extends Controller
          $section_name = $section->section_name;*/
 
          $request->validated();
-         $section = DB::table('sections') // to get section_name and store ir in DB
-                         ->where('id',$request->section_id)
-                         ->value('section_name');
-
+         $section = DB::table('sections')->where('id',$request->section_id)->value('section_name');
         Product::create([
             'product_name'=>$request->product_name,
             'description'=>$request->description,
