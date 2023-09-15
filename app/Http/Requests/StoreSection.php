@@ -26,14 +26,4 @@ class StoreSection extends FormRequest
             'description'=>'required|string|min:6',
         ];
     }
-
-    public function attributes(): array
-    {
-        return [
-            'section_name.required'=>'يرجى أدخال أسم القسم ',
-            'section_name.unique'=>' خطأ القسم مسجل مسبقا ',
-            'description.required'=>' يرجى أدخال وصف للقسم ',
-            'description.min'=>' وصف القسم لا يجب ان يقل عن 6 احرف ',
-        ];
-    }
 }

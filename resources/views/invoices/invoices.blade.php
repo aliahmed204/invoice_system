@@ -1,21 +1,8 @@
 @extends('layouts.master')
 @section('title')
-    قائمة الفواتير
+Invoices list
 @stop
 @section('css')
-    <!-- Internal Data table css -->
-    <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
-    <link href="{{ URL::asset('assets/plugins/datatable/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" />
-    <link href="{{ URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
-    <!--Internal   Notify -->
-    <link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
-
-
-    <link href="{{URL::asset('assets/plugins/fontawesome-free/css/all.min.css')}}" rel="stylesheet">
-    <link href="{{URL::asset('assets/plugins/treeview/treeview.css')}}" rel="stylesheet" type="text/css" />
 
 @endsection
 @section('page-header')
@@ -32,6 +19,15 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
       @if (session()->has('statusUpdated'))
         <script>
@@ -68,11 +64,11 @@
         </script>
     @endif
       {{-- move to aracheve  --}}
-    @if (session()->has('restored'))
+    @if (session()->has('retrieved'))
         <script>
             window.onload = function() {
                 notif({
-                    msg: "invoice restored From  Archive",
+                    msg: "the invoice has been successfully retrieved from the archive",
                     type: "success"
                 })
             }
@@ -97,15 +93,14 @@
         <div class="col-xl-12">
             <div class="card mg-b-20">
                 <div class="card-header pb-0">
-
+                        @can('add invoice')
                         <a href="{{route('invoices.create')}}" class="modal-effect btn btn-sm btn-primary" style="color:white"><i
                                 class="fas fa-plus"></i>&nbsp; Create New Invoice</a>
-
-
-
+                        @endcan
+                        @can('export invoice')
                         <a class="modal-effect btn btn-sm btn-primary" href="{{ route('export_invoices') }}"
                            style="color:white"><i class="fas fa-file-download"></i>&nbsp;Import Excel</a>
-
+                        @endcan
 
                 </div>
                 <div class="card-body">
@@ -129,23 +124,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @php $i = 0; @endphp
                                 @forelse ($invoices as $invoice)
                                     <tr>
-                                        <td>{{ $i++ }}</td>
-                                        <td>{{ $invoice->invoice_number  }}   </td>
-                                        <td>{{ $invoice->invoice_date  }}     </td>
-                                        <td>{{ $invoice->due_date  }}         </td>
-                                        <td>{{ $invoice->product  }}          </td>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $invoice->invoice_number  }} </td>
+                                        <td>{{ $invoice->invoice_date  }}   </td>
+                                        <td>{{ $invoice->due_date  }}       </td>
+                                        <td>{{ $invoice->product  }}        </td>
                                         <td>
                                         <a href="{{route('invoice_details.show',['invoice_detail'=>$invoice->id])}}">
                                             {{ $invoice->section->section_name  }}
                                         </a>
                                         </td>
-                                        <td>{{ $invoice->discount  }}          </td>
-                                        <td>{{ $invoice->rate_vat  }}          </td>
-                                        <td>{{ $invoice->value_vat  }}         </td>
-                                        <td>{{ $invoice->total  }}             </td>
+                                        <td>{{ $invoice->discount  }}  </td>
+                                        <td>{{ $invoice->rate_vat  }}  </td>
+                                        <td>{{ $invoice->value_vat  }} </td>
+                                        <td>{{ $invoice->total  }}    </td>
                                         <td>
 
                                             @if($invoice->value_status == 2)  {{-- not paid --}}
@@ -164,41 +158,43 @@
                                                         class="btn ripple btn-primary btn-sm" data-toggle="dropdown"
                                                         type="button">operation<i class="fas fa-caret-down ml-1"></i></button>
                                                 <div class="dropdown-menu tx-13">
-
+                                                    @can('edit invoice')
                                                     <a class="dropdown-item" href=" {{ route('invoices.edit',[ 'invoice'=>$invoice->id]) }}">
                                                           <i class="text-danger fas fa-edit"></i>
                                                         &nbsp;&nbsp;Edit
                                                     </a>
+                                                    @endcan
 
-                                                    {{-- soft-Dlete --}}
+                                                @can('invoices archive')  {{-- soft-Dlete --}}
                                                 <form action="{{ route('invoices.destroy', ['invoice'=>$invoice->id ]) }}" method="post">
                                                     {{ method_field('delete') }}
                                                     {{ csrf_field() }}
-
                                                     <button type="submit" class="dropdown-item" onclick="return confirm('Complete Move')">
                                                         <i class="text-warning fas fa-exchange-alt"></i>
                                                              &nbsp;&nbsp;Move To Archive
                                                     </button>
                                                 </form>
-
+                                                @endcan
+                                                    @can('invoice status')
                                                         {{-- change payment-status --}}
                                                     <a class="dropdown-item"
                                                        href="{{route('invoices.editStatus',['invoice'=>$invoice->id ])}}">
                                                         <i class=" text-success fas fa-money-bill"></i>
                                                         &nbsp;&nbsp;Change Payment Status
                                                     </a>
+                                                    @endcan
 
                                                             {{-- Force-Dlete --}}
+                                                    @can('delete invoice')
                                                     <form action="{{ route('invoices.forceDelete', ['invoice'=>$invoice->id ]) }}" method="post">
                                                         {{ method_field('delete') }}
                                                         {{ csrf_field() }}
-
                                                         <button type="submit" class="dropdown-item" onclick="return confirm('Complete Delete')">
                                                             <i class="text-danger fas fa-trash-alt"></i>
                                                             &nbsp;&nbsp;Delete
                                                         </button>
                                                     </form>
-
+                                                    @endcan
 
                                                    <a class="dropdown-item" href="{{ route('printInvoices',['invoice'=>$invoice->id ]) }}"><i
                                                             class="text-success fas fa-print"></i>
@@ -289,29 +285,7 @@
     <!-- main-content closed -->
 @endsection
 @section('js')
-    <!-- Internal Data tables -->
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/responsive.dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jszip.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/pdfmake.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/vfs_fonts.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.print.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.colVis.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js') }}"></script>
-    <!--Internal  Datatable js -->
-    <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
-    <!--Internal  Notify js -->
-    <script src="{{URL::asset('assets/plugins/treeview/treeview.js')}}"></script>
-    <script src="{{ URL::asset('assets/plugins/notify/js/notifIt.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/notify/js/notifit-custom.js') }}"></script>
+
 
     <script>
         $('#delete_invoice').on('show.bs.modal', function(event) {

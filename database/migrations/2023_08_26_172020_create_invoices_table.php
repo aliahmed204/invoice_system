@@ -18,12 +18,12 @@ return new class extends Migration
             $table->date('due_date')->nullable();
             $table->string('product');
             $table->foreignId('section_id')->constrained('sections')->cascadeOnDelete();
-            $table->decimal('amount_collection',8,2)->nullable();
-            $table->decimal('amount_commission',8,2);
+            $table->decimal('amount_collection',10,2)->nullable();
+            $table->decimal('amount_commission',10,2);
             $table->decimal('discount',8,2);
-            $table->decimal('value_vat','8','2');
+            $table->decimal('value_vat','10','2');
             $table->string('rate_vat');
-            $table->decimal('total','8','2');
+            $table->decimal('total','10','2');
             $table->string('status','50');
             $table->integer('value_status');
             $table->text('note')->nullable();

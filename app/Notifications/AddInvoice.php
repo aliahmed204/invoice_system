@@ -19,6 +19,7 @@ class AddInvoice extends Notification
     public function __construct($invoice_id)
     {
         $this->id = $invoice_id;
+        $this->afterCommit();
     }
 
     /**
@@ -36,12 +37,10 @@ class AddInvoice extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-
-        //$url = "http://127.0.0.1:8000/invoice_details/".$this->id ;
         $url = route('invoice_details.show',['invoice_detail'=>$this->id]);
         return (new MailMessage)
                     ->greeting('Welcome ')
-                    ->subject('A new invoice has been added ')
+                    ->subject('A New invoice has been Added To System')
                     ->line('create new invoice')
                     ->action('View Invoice',$url)
                     ->line('thank you for using our application');

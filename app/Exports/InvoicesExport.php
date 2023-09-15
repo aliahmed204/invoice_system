@@ -12,7 +12,7 @@ class InvoicesExport implements FromCollection
     */
     public function collection()
     {
-        return Invoices::all();
-        //return Invoices::select('invoice_number','invoice_date','due_date');
+        return Invoices::get();
+        //return Invoices::select('invoice_number','invoice_date','due_date')->get();
     }
 }

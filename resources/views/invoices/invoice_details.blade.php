@@ -1,14 +1,8 @@
 @extends('layouts.master')
 @section('title')
-    معلومات الفاتورة | details
+    Invoice Details
 @stop
 @section('css')
-    <!---Internal  Prism css-->
-    <link href="{{URL::asset('assets/plugins/prism/prism.css')}}" rel="stylesheet">
-    <!---Internal Input tags css-->
-    <link href="{{URL::asset('assets/plugins/inputtags/inputtags.css')}}" rel="stylesheet">
-    <!--- Custom-scroll -->
-    <link href="{{URL::asset('assets/plugins/custom-scroll/jquery.mCustomScrollbar.css')}}" rel="stylesheet">
 
 @endsection
 @section('page-header')
@@ -16,7 +10,7 @@
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">Pages</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Empty</span>
+                <h4 class="content-title mb-0 my-auto">Invoice</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Details</span>
             </div>
         </div>
 
@@ -31,7 +25,6 @@
             <div class="col-lg-12 col-md-12">
                 <div class="card" id="basic-alert">
                     <div class="card-body">
-
                         <div class="text-wrap">
                             <div class="example">
                                 <div class="panel panel-primary tabs-style-1">
@@ -48,74 +41,93 @@
                                     <div class="panel-body tabs-menu-body main-content-body-right border-top-0 border">
                                         <div class="tab-content">
                                             <div class="tab-pane active" id="tab1">
+                                                <div class="table-responsive mt-15">
+                                                    {{--  add file --}}
+                                                    @if(session()->has('success_attach'))
+                                                        <div class="alert alert-success text-center">
+                                                            {{session()->get('success_attach')}}
+                                                        </div>
+                                                    @endif
 
-                                                            <div class="table-responsive mt-15">
-                                                                <table class="table table-striped text-center">
-                                                                    <tbody>
-                                                                    {{-- 1 --}}
-                                                                    <tr>
-                                                                        <th scope="row"> invoice_number</th>
-                                                                        <td>{{$invoice_info->invoice_number}}</td>
-                                                                        <th scope="row"> invoice_date</th>
-                                                                        <td>{{$invoice_info->invoice_date}}</td>
-                                                                        <th scope="row"> due_date</th>
-                                                                        <td>{{$invoice_info->due_date}}</td>
-                                                                    </tr>
+                                                    @if ($errors->any())
+                                                        <div class="alert alert-danger">
+                                                            <ul>
+                                                                @foreach ($errors->all() as $error)
+                                                                    <li>{{ $error }}</li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    @endif
 
-                                                                    <tr>
-                                                                        <th scope="row"> section_name </th>
-                                                                        <td>{{$invoice_info->section->section_name}}</td>
-                                                                        <th scope="row"> product </th>
-                                                                        <td>{{$invoice_info->product}}</td>
-                                                                        <th scope="row">  amount_collection </th>
-                                                                        <td>{{$invoice_info->amount_collection}}</td>
+                                                    @if (session()->has('deleted'))
+                                                        <div class="alert alert-info">
+                                                            {{session()->get('deleted')}}
+                                                        </div>
+                                                    @endif
 
-                                                                    {{-- 2 --}}
-                                                                    <tr>
-                                                                        <th scope="row">  amount_commission </th>
-                                                                        <td>{{$invoice_info->amount_commission}}</td>
-                                                                        <th scope="row"> amount_commission </th>
-                                                                        <td>{{$invoice_info->discount}}</td>
-                                                                        <th scope="row"> amount_commission </th>
-                                                                        <td>{{$invoice_info->rate_vat}}</td>
-                                                                    </tr>
-                                                                    {{-- 3 --}}
-                                                                    <tr>
-                                                                        <th scope="row">amount_commission</th>
-                                                                        <td>{{$invoice_info->value_vat}}</td>
-                                                                        <th scope="row">total  </th>
-                                                                        <td>{{$invoice_info->total}}</td>
-                                                                        <th scope="row">  value_status </th>
-                                                                        @if ($invoice_info->value_status == 1)
-                                                                            <td>
-                                                                                <span class="badge  badge-success">
-                                                                                    {{$invoice_info->status}}
-                                                                                </span>
-                                                                            </td>
-                                                                        @elseif($invoice_info->value_status == 2)
-                                                                            <td>
-                                                                                <span class="badge badge-danger">
-                                                                                    {{$invoice_info->status}}
-                                                                                </span>
-                                                                            </td>
-                                                                        @elseif($invoice_info->value_status == 3)
-                                                                            <td>
-                                                                                <span class="badge badge-pill badge-warning">
-                                                                                    {{$invoice_info->status}}
-                                                                                </span>
-                                                                            </td>
+                                                    <table class="table table-striped text-center">
+                                                        <tbody>
+                                                        {{-- 1 --}}
+                                                        <tr>
+                                                            <th scope="row"> invoice_number</th>
+                                                            <td>{{$invoice_info->invoice_number}}</td>
+                                                            <th scope="row"> invoice_date</th>
+                                                            <td>{{$invoice_info->invoice_date}}</td>
+                                                            <th scope="row"> due_date</th>
+                                                            <td>{{$invoice_info->due_date}}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> section_name </th>
+                                                            <td>{{$invoice_info->section->section_name}}</td>
+                                                            <th scope="row"> product </th>
+                                                            <td>{{$invoice_info->product}}</td>
+                                                            <th scope="row">  amount_collection </th>
+                                                            <td>{{$invoice_info->amount_collection}}</td>
 
-                                                                        @endif
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <th scope="row"> notes </th>
-                                                                        <td colspan="5" >{{$invoice_info->note}}</td>
-                                                                    </tr>
-
-                                                                    </tbody>
-                                                                </table>
-                                                            </div><!-- bd -->
-                                            </div><!-- bd -->
+                                                        {{-- 2 --}}
+                                                        <tr>
+                                                            <th scope="row">  amount_commission </th>
+                                                            <td>{{$invoice_info->amount_commission}}</td>
+                                                            <th scope="row"> amount_commission </th>
+                                                            <td>{{$invoice_info->discount}}</td>
+                                                            <th scope="row"> amount_commission </th>
+                                                            <td>{{$invoice_info->rate_vat}}</td>
+                                                        </tr>
+                                                        {{-- 3 --}}
+                                                        <tr>
+                                                            <th scope="row">amount_commission</th>
+                                                            <td>{{$invoice_info->value_vat}}</td>
+                                                            <th scope="row">total  </th>
+                                                            <td>{{$invoice_info->total}}</td>
+                                                            <th scope="row">  value_status </th>
+                                                            @if ($invoice_info->value_status == 1)
+                                                                <td>
+                                                                    <span class="badge  badge-success">
+                                                                        {{$invoice_info->status}}
+                                                                    </span>
+                                                                </td>
+                                                            @elseif($invoice_info->value_status == 2)
+                                                                <td>
+                                                                    <span class="badge badge-danger">
+                                                                        {{$invoice_info->status}}
+                                                                    </span>
+                                                                </td>
+                                                            @elseif($invoice_info->value_status == 3)
+                                                                <td>
+                                                                    <span class="badge badge-pill badge-warning">
+                                                                        {{$invoice_info->status}}
+                                                                    </span>
+                                                                </td>
+                                                            @endif
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row"> notes </th>
+                                                            <td colspan="5" >{{$invoice_info->note}}</td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
 
                                             <div class="tab-pane" id="tab2">
                                                 <div class="table-responsive mt-15">
@@ -125,21 +137,20 @@
                                                         <tr>
                                                             <th>#</th>
                                                             <th> invoice_number </th>
-                                                            <th>  product </th>
+                                                            <th> product </th>
                                                             <th> section_name </th>
-                                                            <th>  value_status </th>
-                                                            <th>  status </th>
+                                                            <th> value_status </th>
+                                                            <th> Paid_At </th>
                                                             <th> note </th>
-                                                            <th>  created_at </th>
+                                                            <th> created_at </th>
                                                             <th> user </th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
                                                         {{-- 2 --}}
-                                                        @php $i=1; @endphp
                                                         @foreach($invoice_status as $info)
                                                             <tr>
-                                                                <td>{{$i++}}</td>
+                                                                <td>{{$loop->iteration}}</td>
                                                                 <td>{{$info->invoice_number}}</td>
                                                                 <td>{{$info->product}}</td>
                                                                 <td>{{$invoice_info->section->section_name}}</td>
@@ -161,8 +172,8 @@
                                                                         {{$info->status}}
                                                                     </span>
                                                                     </td>
-
                                                                 @endif
+
                                                                     @if($info->value_status == 2)
                                                                     <td>
                                                                         <span class="badge badge-danger">
@@ -187,35 +198,29 @@
 
                                             <div class="tab-pane" id="tab3">
                                                 <div class="table-responsive mt-15">
-                                                    @if (session()->has('deleted'))
-                                                        <div class="alert alert-info">
-                                                            {{session()->get('deleted')}}
-                                                        </div>
-                                                    @endif
                                                     <table class="table table-striped text-center">
                                                         <thead>
                                                         {{-- 1 --}}
                                                         <tr>
                                                             <th>#</th>
-                                                            <th>  file_name </th>
-                                                            <th>   user </th>
-                                                            <th>   created_at </th>
+                                                            <th> file_name </th>
+                                                            <th> user </th>
+                                                            <th> created_at </th>
                                                             <th> operations </th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
                                                         {{-- 2 --}}
-                                                        @php $i=1; @endphp
                                                         @forelse ($invoice_attachments as $invoice_attachment)
                                                             <tr>
-                                                                <td>{{$i++}}</td>
+                                                                <td>{{$loop->iteration}}</td>
                                                                 <td class = "text-wrap" style="max-width: 300px" >
                                                                     {{$invoice_attachment->file_name}}
                                                                 </td>
                                                                 <td>{{$invoice_attachment->user}}</td>
                                                                 <td>{{$invoice_attachment->created_at->format('Y-m-d')}}</td>
                                                                 <td>
-                                                                    {{--show--}}
+                                                                    {{--Open File--}}
                                                                     <a class="btn btn-outline-success btn-sm"
                                                                         href="{{route('view_file',['invoice_number'=>$invoice_info->invoice_number ,'file_name'=>$invoice_attachment->file_name ])}}"
                                                                         role="button" target="_blank"> <i class="fas fa-eye"></i>
@@ -228,11 +233,11 @@
                                                                         &nbsp Download
                                                                     </a>
 
-                                                                    <form method="post" action="{{route('invoice_attachments.destroy',['invoice_attachment'=>$invoice_info->id ])}}" style="display: inline-block;">
+                                                                    <form method="post" action="{{route('invoice_attachments.destroy',['invoice_attachment'=>$invoice_attachment->id ])}}" style="display: inline-block;">
                                                                         @csrf
                                                                         @method('delete')
                                                                         <button class="btn btn-outline-danger btn-sm"
-                                                                           role="button" ><i class="fas fa-cut"></i>
+                                                                           role="button" onclick="return confirm('delete')" ><i class="fas fa-cut"></i>
                                                                             &nbsp Delete
                                                                         </button>
                                                                     </form>
@@ -245,24 +250,7 @@
                                                             </tr>
                                                         @endforelse
 
-                                                        {{--  add file --}}
-                                                        @if(session()->has('success_attach'))
-                                                            <div class="alert alert-success text-center">
-                                                                {{session()->get('success_attach')}}
-                                                            </div>
-                                                        @endif
-
-                                                        @if ($errors->any())
-                                                            <div class="alert alert-danger">
-                                                                <ul>
-                                                                    @foreach ($errors->all() as $error)
-                                                                        <li>{{ $error }}</li>
-                                                                    @endforeach
-                                                                </ul>
-                                                            </div>
-                                                        @endif
-
-
+                                                        @can('add attachment')
                                                         <form method="post" action="{{route('invoice_attachments.store')}}" enctype="multipart/form-data">
                                                             @csrf
                                                             <h5 class="card-title"> add attachment   <small class="text-danger">*  pdf, jpeg ,.jpg , png </small></h5>
@@ -275,8 +263,8 @@
 
                                                             {{-- <div class="d-flex justify-content-center ">--}}
                                                                 <button type="submit" class="btn btn-primary btn-sm m-2">submit </button>
-
                                                         </form>
+                                                        @endcan
 
 
                                                         {{--  add file --}}

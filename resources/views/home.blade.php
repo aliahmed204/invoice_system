@@ -20,7 +20,7 @@
         <div class="main-dashboard-header-right">
             <div>
                 <label class="tx-13">Total Invoices</label>
-                <h5>{{number_format($total,2)}}$</h5>
+                <h5>{{number_format($total,3)}}$</h5>
             </div>
         </div>
     </div>
@@ -39,13 +39,13 @@
                         <div class="d-flex">
                             <div class="">
                                 <h4 class="tx-28 font-weight-bold mb-1 text-white">
-                                     {{ number_format($total,2) }}$
+                                     {{ number_format($total,3) }}$
                                 </h4>
                                 <p class="mb-0 tx-20 text-white op-7">invoices {{$count}} </p>
                             </div>
                             <span class="float-right my-auto mr-auto">
 											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7"> {{round(($count / $count)*100)}} %</span>
+											<span class="text-white op-7"> {{round(($total / $total)*100)}} %</span>
 										</span>
                         </div>
                     </div>
@@ -63,14 +63,14 @@
                         <div class="d-flex">
                             <div class="">
                                 <h4 class="tx-28 font-weight-bold mb-1 text-white">
-                                    {{ number_format($total_unpaid,2) }}$
+                                    {{ number_format($total_unpaid,3) }}$
                                 </h4>
                                 <p class="mb-0 tx-20 text-white op-7">invoices {{$unpaid_count}} </p>
                             </div>
                             <span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-down text-white"></i>
-											<span class="text-white op-7"> {{round($unpaid_ratio)}} %</span>
-										</span>
+                                <i class="fas fa-arrow-circle-down text-white"></i>
+                                <span class="text-white op-7"> {{round($unpaid_ratio)}} %</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -92,9 +92,9 @@
                                 <p class="mb-0 tx-20 text-white op-7">invoices {{ $paid_count }} </p>
                             </div>
                             <span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7">{{ round($paid_ratio)}} %</span>
-										</span>
+                                    <i class="fas fa-arrow-circle-up text-white"></i>
+                                    <span class="text-white op-7">{{ round($paid_ratio)}} %</span>
+                                </span>
                         </div>
                     </div>
                 </div>
@@ -116,9 +116,9 @@
                                 <p class="mb-0 tx-20 text-white op-7">invoices {{$partially_count}} </p>
                             </div>
                             <span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-down text-white"></i>
-											<span class="text-white op-7"> {{ round($partially_ratio) }} %</span>
-										</span>
+                                <i class="fas fa-arrow-circle-down text-white"></i>
+                                <span class="text-white op-7"> {{ round($partially_ratio) }} %</span>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -126,31 +126,6 @@
             </div>
         </div>
     </div>
-    <!-- row closed -->
-{{--    <div class="row ">--}}
-{{--        <div class="col-md-6">--}}
-{{--            <div class="card">--}}
-{{--                <div class="card-header bg-transparent pd-b-0 pd-t-20 bd-b-0">--}}
-{{--                    <div class="d-flex justify-content-between">--}}
-{{--                        <h4 class="card-title mb-0">Invoices Statistics Percentage</h4>--}}
-{{--                        <i class="mdi mdi-dots-horizontal text-gray"></i>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                <div class="card-body" style="width:100%;">--}}
-{{--                    {!! $chartjs->render() !!}--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--        <div class="col-md-6">--}}
-{{--            <div class="card card-dashboard-map-one">--}}
-{{--                <h4 class="card-title">Invoices Statistics Percentage</h4>--}}
-{{--                <div class="card-body" style="width: 100%;">--}}
-{{--                    {!! $chartjs_2->render() !!}--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-    <!-- /row -->
     <div class="row row-sm">
         <div class="col-md-12">
             <div class="card">

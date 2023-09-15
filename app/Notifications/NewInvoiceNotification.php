@@ -18,6 +18,7 @@ class NewInvoiceNotification extends Notification
     public function __construct(Invoices $invoice)
     {
         $this->invoice = $invoice;
+        $this->afterCommit();
     }
 
     /**

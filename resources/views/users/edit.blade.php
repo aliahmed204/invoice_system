@@ -1,20 +1,17 @@
 @extends('layouts.master')
-@section('css')
-    <!-- Internal Nice-select css  -->
-    <link href="{{URL::asset('assets/plugins/jquery-nice-select/css/nice-select.css')}}" rel="stylesheet" />
+
+
     @section('title')
-        اضافة مستخدم - مورا سوفت للادارة القانونية
+        Edit User
     @stop
 
-
-@endsection
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">المستخدمين</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ اضافة
-                مستخدم</span>
+                <h4 class="content-title mb-0 my-auto">users</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Edit
+                User</span>
             </div>
         </div>
     </div>
@@ -52,9 +49,7 @@
                           action="{{route('users.update',['user'=> $user->id])}}" method="post">
                         @csrf
                         @method('PATCH')
-
                         <div class="">
-
                             <div class="row mg-b-20">
                                 <div class="parsley-input col-md-6" id="fnWrapper">
                                     <label>user name: <span class="tx-danger">*</span></label>
@@ -62,7 +57,6 @@
                                            data-parsley-class-handler="#lnWrapper" name="name" required="required" type="text"
                                      value="{{$user->name}}" >
                                 </div>
-
                                 <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
                                     <label>Email : <span class="tx-danger">*</span></label>
                                     <input class="form-control form-control-sm mg-b-20"
@@ -70,9 +64,7 @@
                                            value="{{$user->email}}" >
                                 </div>
                             </div>
-
                         </div>
-
                         <div class="row mg-b-20">
                             <div class="parsley-input col-md-6 mg-t-20 mg-md-t-0" id="lnWrapper">
                                 <label>Password : <span class="tx-danger">*</span></label>

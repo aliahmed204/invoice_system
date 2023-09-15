@@ -1,21 +1,10 @@
 @extends('layouts.master')
 @section('css')
-    <!-- Internal Data table css -->
-    <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
-    <link href="{{ URL::asset('assets/plugins/datatable/css/buttons.bootstrap4.min.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" />
-    <link href="{{ URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css') }}" rel="stylesheet">
-    <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
 
     <!-- Internal Spectrum-colorpicker css -->
     <link href="{{ URL::asset('assets/plugins/spectrum-colorpicker/spectrum.css') }}" rel="stylesheet">
-
-    <!-- Internal Select2 css -->
-    <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
-
     @section('title')
-        تقرير العملاء - مورا سوفت للادارة الفواتير
+        Customre Reports
     @stop
 @endsection
 @section('page-header')
@@ -23,8 +12,8 @@
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">التقارير</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ تقرير
-                العملاء</span>
+                <h4 class="content-title mb-0 my-auto">Reports</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Reports
+                Customre</span>
             </div>
         </div>
     </div>
@@ -37,7 +26,7 @@
             <button aria-label="Close" class="close" data-dismiss="alert" type="button">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <strong>خطا</strong>
+            <strong>error</strong>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -60,10 +49,10 @@
                         <div class="row">
 
                             <div class="col">
-                                <label for="inputName" class="control-label">القسم</label>
+                                <label for="inputName" class="control-label">section</label>
                                 <select name="Section" class="form-control" >
                                     <!--placeholder-->
-                                    <option value="" selected disabled>حدد القسم</option>
+                                    <option value="" selected disabled>--select section --</option>
                                     @foreach ($sections as $section)
                                         <option value="{{ $section->id }}"> {{ $section->section_name }}</option>
                                     @endforeach
@@ -71,14 +60,14 @@
                             </div>
 
                             <div class="col-lg-3 mg-t-20 mg-lg-t-0">
-                                <label for="inputName" class="control-label">المنتج</label>
+                                <label for="inputName" class="control-label">product</label>
                                 <select id="product" name="product" class="form-control">
                                 </select>
                             </div>
 
 
                             <div class="col-lg-3" id="start_at">
-                                <label for="exampleFormControlSelect1">من تاريخ</label>
+                                <label for="exampleFormControlSelect1">From</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">
@@ -89,7 +78,7 @@
                             </div>
 
                             <div class="col-lg-3" id="end_at">
-                                <label for="exampleFormControlSelect1">الي تاريخ</label>
+                                <label for="exampleFormControlSelect1">To</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">
@@ -103,7 +92,7 @@
 
                         <div class="row">
                             <div class="col-sm-1 col-md-1">
-                                <button class="btn btn-primary btn-block">بحث</button>
+                                <button class="btn btn-primary btn-block">Find</button>
                             </div>
                         </div>
                     </form>
@@ -112,36 +101,36 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         @if (isset($details))
-                            <table id="example" class="table key-buttons text-md-nowrap" style=" text-align: center">
+                            <table id="example1" class="table key-buttons text-md-nowrap" style=" text-align: center">
                                 <thead>
                                 <tr>
                                     <th class="border-bottom-0">#</th>
-                                    <th class="border-bottom-0">رقم الفاتورة</th>
-                                    <th class="border-bottom-0">تاريخ القاتورة</th>
-                                    <th class="border-bottom-0">تاريخ الاستحقاق</th>
-                                    <th class="border-bottom-0">المنتج</th>
-                                    <th class="border-bottom-0">القسم</th>
-                                    <th class="border-bottom-0">الخصم</th>
-                                    <th class="border-bottom-0">نسبة الضريبة</th>
-                                    <th class="border-bottom-0">قيمة الضريبة</th>
-                                    <th class="border-bottom-0">الاجمالي</th>
-                                    <th class="border-bottom-0">الحالة</th>
-                                    <th class="border-bottom-0">ملاحظات</th>
+                                    <th class="border-bottom-0">invoice number</th>
+                                    <th class="border-bottom-0">invoice date  </th>
+                                    <th class="border-bottom-0">Due date</th>
+                                    <th class="border-bottom-0">Product</th>
+                                    <th class="border-bottom-0">Section</th>
+                                    <th class="border-bottom-0">Discount</th>
+                                    <th class="border-bottom-0">Rate_VAT </th>
+                                    <th class="border-bottom-0"> Value_VAT</th>
+                                    <th class="border-bottom-0">Total</th>
+                                    <th class="border-bottom-0">status</th>
+                                    <th class="border-bottom-0">Notes</th>
 
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    <?php $i = 0; ?>
                                 @foreach ($details as $invoice)
-                                        <?php $i++; ?>
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $invoice->invoice_number }} </td>
                                         <td>{{ $invoice->invoice_date }}</td>
                                         <td>{{ $invoice->due_date }}</td>
                                         <td>{{ $invoice->product }}</td>
-                                        <td><a
-                                                href="{{ url('InvoicesDetails') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}</a>
+                                        <td>
+                                            <a href="{{ url('InvoicesDetails') }}/{{ $invoice->id }}">
+                                                {{ $invoice->section->section_name }}
+                                            </a>
                                         </td>
                                         <td>{{ $invoice->discount }}</td>
                                         <td>{{ $invoice->rate_vat }}</td>
@@ -157,7 +146,6 @@
                                             @endif
 
                                         </td>
-
                                         <td>{{ $invoice->note }}</td>
                                     </tr>
                                 @endforeach
@@ -177,25 +165,6 @@
     <!-- main-content closed -->
 @endsection
 @section('js')
-    <!-- Internal Data tables -->
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/responsive.dataTables.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jszip.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/pdfmake.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/vfs_fonts.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.print.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/buttons.colVis.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js') }}"></script>
-    <!--Internal  Datatable js -->
-    <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 
     <!--Internal  Datepicker js -->
     <script src="{{ URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js') }}"></script>

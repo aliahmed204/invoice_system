@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserStore;
+use App\Http\Requests\UserUpdate;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -15,7 +17,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $data = User::latest()->paginate(5);
+        $data = User::latest()->paginate(10);
         return view('users.index',compact('data'));
     }
 
@@ -25,23 +27,16 @@ class UserController extends Controller
         return view('users.create',compact('roles'));
     }
 
-    public function store(Request $request)
+    public function store(UserStore $request)
     {
-
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|same:confirm-password',
-            'roles_name' => 'required'
-        ]);
-
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
 
         $user = User::create($input);
         $user->assignRole($request->input('roles_name'));
 
-        return redirect()->route('users.index')
+        return redirect()
+            ->route('users.index')
             ->with('success','User created successfully');
     }
 
@@ -62,17 +57,10 @@ class UserController extends Controller
         return view('users.edit',compact('user','roles','userRole'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UserUpdate $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$id,
-            'password' => 'same:confirm-password',
-            'roles_name' => 'required',
-            'status' => 'required',
-        ]);
-
         $input = $request->all();
+
         if(!empty($input['password'])){
             $input['password'] = Hash::make($input['password']);
         }else{

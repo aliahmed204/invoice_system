@@ -12,6 +12,6 @@ class PaidInvoicesExport implements FromCollection
     */
     public function collection()
     {
-        return Invoices::where('value_status', '=' ,'1')->get();
+        return Invoices::paid()->get();
     }
 }

@@ -8,16 +8,14 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
+    public function loginPage(){
+        return view('auth.login');
+    }
     public function index()
     {
         $count = Invoices::count();
@@ -32,33 +30,18 @@ class HomeController extends Controller
         $total_partially = $this->total('3');
         $partially_count = $this->count('3');
 
-        $paid_ratio = ($paid_count != 0) ?(($paid_count/ $count)*100)  : 0;
-        $unpaid_ratio = ($unpaid_count != 0) ? (($unpaid_count/ $count)*100) : 0;
-        $partially_ratio = ($partially_count != 0) ? (($partially_count/ $count)*100) : 0;
+        $paid_ratio = ($total_paid != 0) ? (( $total_paid / $total) * 100)  : 0;
+        $unpaid_ratio = ($total_unpaid != 0) ? (($total_unpaid / $total) * 100) : 0;
+        $partially_ratio = ($total_partially != 0) ? (($total_partially/ $total)*100) : 0;
 
         $chartjs = $this->chart_1($paid_ratio ,$unpaid_ratio ,$partially_ratio);
         $chartjs_2 = $this->chart_2($paid_ratio ,$unpaid_ratio ,$partially_ratio);
 
-        return view('home',compact(
-            'count',
-            'total',
-            'total_paid',
-            'paid_count',
+        return view('home', get_defined_vars());
 
-            'total_unpaid',
-            'unpaid_count',
-
-            'total_partially',
-            'partially_count',
-
-            'paid_ratio',
-            'unpaid_ratio',
-            'partially_ratio',
-
-            'chartjs',
-            'chartjs_2',
-        ));
-
+        /*compact('count', 'total', 'total_paid', 'paid_count',
+            'total_unpaid', 'unpaid_count', 'total_partially', 'partially_count', 'paid_ratio', 'unpaid_ratio',
+            'partially_ratio', 'chartjs', 'chartjs_2')*/
     }
     private function total($status_value){
         return Invoices::where('value_status',$status_value)->sum('total');

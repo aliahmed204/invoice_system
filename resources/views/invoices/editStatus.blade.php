@@ -1,18 +1,9 @@
 @extends('layouts.master')
 @section('css')
-    <!--- Internal Select2 css-->
-    <link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css') }}" rel="stylesheet">
-    <!---Internal Fileupload css-->
-    <link href="{{ URL::asset('assets/plugins/fileuploads/css/fileupload.css') }}" rel="stylesheet" type="text/css" />
-    <!---Internal Fancy uploader css-->
-    <link href="{{ URL::asset('assets/plugins/fancyuploder/fancy_fileupload.css') }}" rel="stylesheet" />
-    <!--Internal Sumoselect css-->
-    <link rel="stylesheet" href="{{ URL::asset('assets/plugins/sumoselect/sumoselect-rtl.css') }}">
-    <!--Internal  TelephoneInput css-->
-    <link rel="stylesheet" href="{{ URL::asset('assets/plugins/telephoneinput/telephoneinput-rtl.css') }}">
+
 @endsection
 @section('title')
-    تعديل حالة الدفع | Edit payment
+     Edit payment Status
 @stop
 
 @section('page-header')
@@ -20,7 +11,7 @@
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">inovices</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/
+                <h4 class="content-title mb-0 my-auto">invoices</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/
                     Edit Status</span>
             </div>
         </div>
@@ -28,7 +19,15 @@
     <!-- breadcrumb -->
 @endsection
 @section('content')
-
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <!-- row -->
     <div class="row">
@@ -165,15 +164,6 @@
 @section('js')
     <!-- Internal Select2 js-->
     <script src="{{ URL::asset('assets/plugins/select2/js/select2.min.js') }}"></script>
-    <!--Internal Fileuploads js-->
-    <script src="{{ URL::asset('assets/plugins/fileuploads/js/fileupload.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/fileuploads/js/file-upload.js') }}"></script>
-    <!--Internal Fancy uploader js-->
-    <script src="{{ URL::asset('assets/plugins/fancyuploder/jquery.ui.widget.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/fancyuploder/jquery.fileupload.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/fancyuploder/jquery.iframe-transport.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/fancyuploder/jquery.fancy-fileupload.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/fancyuploder/fancy-uploader.js') }}"></script>
     <!--Internal  Form-elements js-->
     <script src="{{ URL::asset('assets/js/advanced-form-elements.js') }}"></script>
     <script src="{{ URL::asset('assets/js/select2.js') }}"></script>

@@ -1,21 +1,17 @@
 @extends('layouts.master')
-@section('css')
-    <!--Internal  Font Awesome -->
-    <link href="{{URL::asset('assets/plugins/fontawesome-free/css/all.min.css')}}" rel="stylesheet">
-    <!--Internal  treeview -->
-    <link href="{{URL::asset('assets/plugins/treeview/treeview-rtl.css')}}" rel="stylesheet" type="text/css" />
+
     @section('title')
-        اضافة الصلاحيات - مورا سوفت للادارة القانونية
+        Add permissions
     @stop
 
-@endsection
+
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">الصلاحيات</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ اضافة
-                نوع مستخدم</span>
+                <h4 class="content-title mb-0 my-auto">permissions</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Create
+                permission</span>
             </div>
         </div>
     </div>
@@ -54,7 +50,7 @@
                     <div class="main-content-label mg-b-5">
                         <div class="col-xs-7 col-sm-7 col-md-7">
                             <div class="form-group">
-                                <p>اسم الصلاحية :</p>
+                                <p>permission  :</p>
                                 <input type="text" name="name" class="form-control">
 {{-- {!! Form::text('name', null, array('class' => 'form-control')) !!} --}}
                             </div>

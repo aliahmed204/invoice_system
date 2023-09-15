@@ -86,6 +86,12 @@ class DatabaseSeeder extends Seeder
         $role->syncPermissions($permissions);
 
         $user->assignRole([$role->id]);
+
+        $this->call([
+            SectionSeeder::class,
+        ]);
     }
+
+
 
 }

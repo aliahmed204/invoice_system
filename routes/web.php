@@ -26,75 +26,111 @@ use App\Http\Controllers\AdminController;
 |
 */
 
-Route::get('/', function () {
-    return view('auth.login');
-});
-// should be first thing in routes
-//Auth::routes();
 Auth::routes(['register'=> false]);
-// user can't make register == admin will insert users manually
 
-
-Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
+Route::group([
+    'controller'=>HomeController::class
+],function (){
+    Route::get('/', 'loginPage')->name('loginPage')->middleware('guest');
+    Route::get('/home',  'index')->name('home')->middleware('auth');
+});
 
 //Route::get('/invoices', [InvoicesController::class, 'index'])->name('invoices')->middleware('auth');
 Route::resource('/invoices',InvoicesController::class)->middleware('auth');
-Route::delete('invoices.forceDelete/{invoice}', [InvoicesController::class , 'forceDelete'])->name('invoices.forceDelete')->middleware('auth');
-Route::get('invoices.editStatus/{invoice}', [InvoicesController::class , 'editStatus'])->name('invoices.editStatus')->middleware('auth');
-Route::patch('invoices.updateStatus/{invoice}', [InvoicesController::class , 'updateStatus'])->name('invoices.updateStatus')->middleware('auth');
-// notification mark all read
-Route::get('notification.allRead', [InvoicesController::class , 'allRead'])->name('allRead')->middleware('auth');
+Route::group([
+    'controller'=> InvoicesController::class,
+    'middleware' => 'auth'
+],function (){
+    Route::get('paidInvoices', 'paidInvoice')->name('paidInvoices');
+    Route::get('unPaidInvoices', 'unPaidInvoice')->name('unPaidInvoices');
+    Route::get('partiallyPaidInvoices', 'partiallyPaidInvoice')->name('partiallyPaidInvoices');
+    Route::get('printInvoices/{invoice}', 'printInvoice')->name('printInvoices');
+    Route::get('export_invoices', 'export')->name('export_invoices');
+    Route::get('export_paid_invoices', 'export_paid')->name('export_paid_invoices');
+    Route::get('export_Unpaid_invoices', 'export_Unpaid')->name('export_Unpaid_invoices');
 
-Route::get('paidInvoices', [InvoicesController::class , 'paidInvoice'])->name('paidInvoices')->middleware('auth');
-Route::get('unPaidInvoices', [InvoicesController::class , 'unPaidInvoice'])->name('unPaidInvoices')->middleware('auth');
-Route::get('partiallyPaidInvoices', [InvoicesController::class , 'partiallyPaidInvoice'])->name('partiallyPaidInvoices')->middleware('auth');
-Route::get('printInvoices/{invoice}', [InvoicesController::class , 'printInvoice'])->name('printInvoices')->middleware('auth');
-Route::get('export_invoices', [InvoicesController::class, 'export'])->name('export_invoices');
-Route::get('export_paid_invoices', [InvoicesController::class, 'export_paid'])->name('export_paid_invoices');
-Route::get('export_Unpaid_invoices', [InvoicesController::class, 'export_Unpaid'])->name('export_Unpaid_invoices');
+    // notification mark all read
+    Route::get('notification.allRead', 'allRead')->name('allRead');
+    // get product in specific section throw ajax
+    Route::get('section/{id}','getProducts');
+
+    Route::group([
+        'prefix' => 'invoices',
+        'as'=> 'invoices.'
+    ],function (){
+        Route::delete('/forceDelete/{invoice}', 'forceDelete')->name('forceDelete');
+        Route::get('/editStatus/{invoice}', 'editStatus')->name('editStatus');
+        Route::patch('/updateStatus/{invoice}', 'updateStatus')->name('updateStatus');
+    });
+
+});
+
+Route::group([
+    'prefix'=>'archiveInvoices',
+    'as'=>'archiveInvoices.',
+    'controller'=>ArchiveInvoiceController::class,
+    'middleware'=> 'auth'
+],function (){
+    Route::get('/',  'index')->name('index');
+    Route::patch('/{archiveInvoice}/update',  'update')->name('update');
+    Route::delete('/{archiveInvoice}/destroy',  'destroy')->name('destroy');
+});
 
 
-Route::get('archiveInvoices', [ArchiveInvoiceController::class , 'index'])->name('archiveInvoices.index')->middleware('auth');
-Route::patch('archiveInvoices/{archiveInvoice}/update', [ArchiveInvoiceController::class , 'update'])->name('archiveInvoices.update')->middleware('auth');
-Route::delete('archiveInvoices/{archiveInvoice}/destroy', [ArchiveInvoiceController::class , 'destroy'])->name('archiveInvoices.destroy')->middleware('auth');
 
 
-Route::resource('/invoice_details',InvoiceDetailController::class)->middleware('auth');
-Route::resource('/invoice_attachments',InvoiceAttachmentController::class)->middleware('auth');
 
 
-Route::resource('/sections',SectionController::class)->middleware('auth');
-Route::resource('/products',ProductController::class)->middleware('auth');
+Route::group([
+    'middleware' => 'auth',
+    'controller' => InvoiceAttachmentController::class,
+],function () {
 
-Route::get('section/{id}',[InvoicesController::class,'getProducts'])->middleware('auth');
+    Route::get ('view_file/{invoice_number}/{file_name}' , 'openFile')->name('view_file');
+    Route::get ('download_file/{invoice_number}/{file_name}' , 'getFile')->name('download_file');
 
-Route::get ('view_file/{invoice_number}/{file_name}' , [InvoiceDetailController::class ,'openFile'])
-    ->name('view_file');
-Route::get ('download_file/{invoice_number}/{file_name}' , [InvoiceDetailController::class ,'getFile'])
-    ->name('download_file');
+    Route::group([
+        'prefix' => 'invoice_attachments',
+        'as' =>'invoice_attachments.',
+    ],function () {
+    Route::delete('/{invoice_attachment}','destroy')->name('destroy');
+    Route::post('/store','store')->name('store');
+    });
 
+});
 
 
 Route::middleware('auth')->group(function () {
-    // Our resource routes
+    Route::resource('/invoice_details',InvoiceDetailController::class);
+    Route::resource('/sections',SectionController::class);
+    Route::resource('/products',ProductController::class);
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
 });
 
 Route::group([
     'middleware'=>'auth',
+    'controller'=>InvoicesReportController::class,
 ],function(){
-    Route::get('/reports',[InvoicesReportController::class,'index'])->name('reports.index');
-    Route::get('/invoiceSearch',[InvoicesReportController::class,'invoiceSearch'])->name('reports.invoiceSearch');
+    Route::get('/reports','index')->name('reports.index');
+    Route::get('/invoiceSearch','invoiceSearch')->name('reports.invoiceSearch');
+    Route::match(['post','get'],'/reports/search','search')->name('reports.search');
 
-    Route::match(['post','get'],'/reports/search',[InvoicesReportController::class,'search'])->name('reports.search');
-
-    Route::match(['post','get'],'/getReport',[InvoicesReportController::class,'findOne'])->name('report.findOne');
+    Route::match(['post','get'],'/getReport','findOne')->name('report.findOne');
 
 });
+
 // reports search
-Route::get('/users-reports',[UsersReportController::class,'index'])->name('usersReports.index');
-Route::match(['post','get'],'/users/search',[UsersReportController::class,'search'])->name('usersReports.search');
+Route::group([
+    'middleware' => 'auth',
+    'as' => 'usersReports.',
+    'controller' => UsersReportController::class,
+],function () {
+    Route::get('/users-reports','index')->name('index');
+    Route::match(['post','get'],'/users/search','search')->name('search');
+});
+
+
 
 
 Route::get('/{page}', [AdminController::class,'index']); // always at the end

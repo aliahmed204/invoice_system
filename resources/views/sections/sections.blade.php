@@ -1,25 +1,16 @@
 @extends('layouts.master')
 
 @section('title')
-    Sections | الإقسام
+    Sections
 @endsection
 
-@section('css')
-    <!-- Internal Data table css -->
-    <link href="{{URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css')}}" rel="stylesheet" />
-    <link href="{{URL::asset('assets/plugins/datatable/css/buttons.bootstrap4.min.css')}}" rel="stylesheet">
-    <link href="{{URL::asset('assets/plugins/datatable/css/responsive.bootstrap4.min.css')}}" rel="stylesheet" />
-    <link href="{{URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css')}}" rel="stylesheet">
-    <link href="{{URL::asset('assets/plugins/datatable/css/responsive.dataTables.min.css')}}" rel="stylesheet">
-    <link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
-@stop
 
 @section('page-header')
 				<!-- breadcrumb -->
 				<div class="breadcrumb-header justify-content-between">
 					<div class="my-auto">
 						<div class="d-flex">
-							<h4 class="content-title mb-0 my-auto">Sections | الأقسام</h4>
+							<h4 class="content-title mb-0 my-auto">Sections </h4>
 						</div>
 					</div>
 				</div>
@@ -29,26 +20,31 @@
 @section('content')
 				<!-- row  tables -->
 				<div class="row">
-
                     <div class="row row-sm">
                         <div class="col-xl-12">
                             <div class="card">
                                 <div class="card-header pb-0">
                                     <div class="d-flex justify-content-between">
-
-
-                                            <div class="col-sm-3 col-md-2 col-xl-3">
-                                                <a class="modal-effect btn btn-outline-primary btn-block" data-effect="effect-scale" data-toggle="modal" href="#modaldemo8">Add Sectoin </a>
-                                            </div>
-
-
+                                        {{--Add New Section--}}
+                                        @can('add section')
+                                        <div class="col-sm-3 col-md-2 col-xl-3">
+                                            <a class="modal-effect btn btn-outline-primary btn-block" data-effect="effect-scale" data-toggle="modal" href="#modaldemo8">Add Sectoin </a>
+                                        </div>
+                                         @endcan
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
+                                        @if($errors->any())
+                                            <div class="alert alert-danger mt-2">
+                                                @foreach($errors->all() as $error )
+                                                    <li> {{$error}}</li>
+                                                @endforeach
+                                            </div>
+                                        @endif
 
                                         @if(session()->has('success'))
-                                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
                                                 <strong> {{session()->get('success')}} </strong>
                                             </div>
                                         @endif
@@ -71,14 +67,6 @@
                                             </div>
                                         @endif
 
-                                        @if ($errors->any())
-                                            @foreach ($errors->all() as $error)
-                                                <div class="alert alert-danger font-weight-bold text-center">
-                                                    {{ $error }}
-                                                </div>
-                                            @endforeach
-                                        @endif
-
                                         <table class="table text-md-nowrap text-center" id="example1">
                                             <thead>
                                             <tr>
@@ -87,39 +75,37 @@
                                                 <th class="wd-15p border-bottom-0">description</th>
                                                 <th class="wd-15p border-bottom-0">created_by</th>
                                                 <th class="wd-15p border-bottom-0">operations</th>
-
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <?php $i=1 ?>
                                             @forelse ($sections as $section)
                                                 <tr>
-                                                    <td>{{$i++}}</td>
+                                                    <td>{{$loop->iteration}}</td>
                                                     <td>{{$section->section_name}}</td>
                                                     <td>{{$section->description}}</td>
                                                     <td>{{$section->created_by}}</td>
                                                     <td>
+                                                        @can('edit product')
                                                         <a class="modal-effect btn btn-outline-success" data-effect="effect-scale"
                                                                data-id="{{$section->id}}" data-section_name="{{$section->section_name}}"
                                                                data-description="{{$section->description}}"
                                                                data-toggle="modal" href="#exampleModal12" > Edit
                                                         </a>
-
+                                                        @endcan
+                                                        @can('delete product')
                                                         <form action="{{route('sections.destroy',['section'=>$section->id])}}" method="post" style="display: inline-block">
                                                             @csrf
                                                             @method('delete')
                                                             <button class="btn btn-outline-danger" onclick="return confirm('Do You want to Complete Deleting')">Delete</button>
                                                         </form>
+                                                        @endcan
                                                     </td>
                                                 </tr>
                                             @empty
-                                                    <tr>
-                                                        <td colspan="5"><div class="alert alert-info">empty sectoins</div></td>
-                                                    </tr>
-
+                                                <tr>
+                                                    <td colspan="5"><div class="alert alert-info">empty sections</div></td>
+                                                </tr>
                                             @endforelse
-
-
                                             </tbody>
                                         </table>
 
@@ -199,40 +185,22 @@
 @endsection
 
 @section('js')
-    <!-- Internal Data tables -->
-    <script src="{{URL::asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/dataTables.dataTables.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/responsive.dataTables.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/jquery.dataTables.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/buttons.bootstrap4.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/jszip.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/pdfmake.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/vfs_fonts.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/buttons.html5.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/buttons.print.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/buttons.colVis.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/dataTables.responsive.min.js')}}"></script>
-    <script src="{{URL::asset('assets/plugins/datatable/js/responsive.bootstrap4.min.js')}}"></script>
-    <!--Internal  Datatable js -->
-    <script src="{{URL::asset('assets/js/table-data.js')}}"></script>
-                            <script>
-                                $(document).ready(function() {
-                                    $('#exampleModal12').on('show.bs.modal', function(event) {
-                                        var button = $(event.relatedTarget); // Button that triggered the modal
-                                        var id = button.data('id'); // Extract information from data-* attributes
-                                        var section_name = button.data('section_name');
-                                        var description = button.data('description');
 
-                                        var modal = $(this); // Modal itself
-                                        modal.find('.modal-title').text('Edit Section'); // Set modal title
-                                        modal.find('#id').val(id); // Set the value of an input element
-                                        modal.find('#section_name').val(section_name); // Set the value of another input element
-                                        modal.find('#sectionDescription').val(description); // Set the value of a textarea element
-                                    });
-                                });
-                            </script>
+    <script>
+        $(document).ready(function() {
+            $('#exampleModal12').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('id'); // Extract information from data-* attributes
+                var section_name = button.data('section_name');
+                var description = button.data('description');
+
+                var modal = $(this); // Modal itself
+                modal.find('.modal-title').text('Edit Section'); // Set modal title
+                modal.find('#id').val(id); // Set the value of an input element
+                modal.find('#section_name').val(section_name); // Set the value of another input element
+                modal.find('#sectionDescription').val(description); // Set the value of a textarea element
+            });
+        });
+    </script>
 
 @endsection

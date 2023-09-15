@@ -12,6 +12,6 @@ class UnpaidInvoicesExport implements FromCollection
     */
     public function collection()
     {
-        return Invoices::where('value_status','=','2')->get();
+        return Invoices::unpaid()->get();
     }
 }

@@ -12,31 +12,14 @@
 							<a class="open-toggle" href="#"><i class="header-icon fe fe-align-left" ></i></a>
 							<a class="close-toggle" href="#"><i class="header-icons fe fe-x"></i></a>
 						</div>
-						<div class="main-header-center mr-3 d-sm-none d-md-none d-lg-block">
-							<input class="form-control" placeholder="Search for anything..." type="search"> <button class="btn"><i class="fas fa-search d-none d-md-block"></i></button>
-						</div>
 					</div>
 					<div class="main-header-right">
 						<div class="nav nav-item  navbar-nav-right ml-auto">
-							<div class="nav-link" id="bs-example-navbar-collapse-1">
-								<form class="navbar-form" role="search">
-									<div class="input-group">
-										<input type="text" class="form-control" placeholder="Search">
-										<span class="input-group-btn">
-											<button type="reset" class="btn btn-default">
-												<i class="fas fa-times"></i>
-											</button>
-											<button type="submit" class="btn btn-default nav-link resp-btn">
-												<svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-											</button>
-										</span>
-									</div>
-								</form>
-							</div>
+
                                 <!--  notification    -->
 							<div class="dropdown nav-item main-header-notification">
 								<a class="new nav-link" href="#">
-								<svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg><span class=" pulse"></span></a>
+								<svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></a>
 								<div class="dropdown-menu">
 									<div class="menu-header-content bg-primary text-right">
 										<div class="d-flex">
@@ -62,15 +45,10 @@
                                                     <i class="las la-angle-left text-left text-muted">
                                                     </i>
                                                 </div>
-
                                             </a>
-
                                         @empty
                                         @endforelse
 									</div>
-<!--									<div class="dropdown-footer">
-										<a href="">VIEW ALL</a>
-									</div>-->
 								</div>
 							</div>
 							<div class="nav-item full-screen fullscreen-button">
@@ -87,14 +65,9 @@
 											</div>
 										</div>
 									</div>
-									<a class="dropdown-item" href=""><i class="bx bx-user-circle"></i>Profile</a>
-									<a class="dropdown-item" href=""><i class="bx bx-cog"></i> Edit Profile</a>
-									<a class="dropdown-item" href=""><i class="bx bxs-inbox"></i>Inbox</a>
-									<a class="dropdown-item" href=""><i class="bx bx-envelope"></i>Messages</a>
-									<a class="dropdown-item" href=""><i class="bx bx-slider-alt"></i> Account Settings</a>
                                             <!--	Sign Out | تسجيل خروج  -->
                                     <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                                        <i class="bx bx-log-out"></i>  Sign Out | تسجيل خروج</a>
+                                        <i class="bx bx-log-out"></i>  Log-Out </a>
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                             @csrf
                                         </form>

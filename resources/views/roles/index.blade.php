@@ -1,13 +1,9 @@
 @extends('layouts.master')
-@section('css')
-    <!--Internal   Notify -->
-    <link href="{{ URL::asset('assets/plugins/notify/css/notifIt.css') }}" rel="stylesheet" />
     @section('title')
         users roles
     @stop
 
 
-@endsection
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
@@ -27,7 +23,7 @@
         <script>
             window.onload = function() {
                 notif({
-                    msg: " تم اضافة الصلاحية بنجاح",
+                    msg: " Permission Add Successfully",
                     type: "success"
                 });
             }
@@ -39,7 +35,7 @@
         <script>
             window.onload = function() {
                 notif({
-                    msg: " تم تحديث بيانات الصلاحية بنجاح",
+                    msg: "Edit Done",
                     type: "success"
                 });
             }
@@ -51,7 +47,7 @@
         <script>
             window.onload = function() {
                 notif({
-                    msg: " تم حذف الصلاحية بنجاح",
+                    msg: " Permission Deleted Successfully",
                     type: "error"
                 });
             }
@@ -67,9 +63,9 @@
                     <div class="d-flex justify-content-between">
                         <div class="col-lg-12 margin-tb">
                             <div class="pull-right">
-
-                                    <a class="btn btn-primary btn-sm" href="{{ route('roles.create') }}">Add</a>
-
+                                @can('add permission')
+                                <a class="btn btn-primary btn-sm" href="{{ route('roles.create') }}">Add</a>
+                                @endcan
                             </div>
                         </div>
                         <br>
@@ -93,23 +89,23 @@
                                     <td>{{ $role->name }}</td>
                                     <td>
 
-                                            <a class="btn btn-success btn-sm"
-                                               href="{{ route('roles.show', $role->id) }}">show</a>
+                                    <a class="btn btn-success btn-sm"
+                                       href="{{ route('roles.show', $role->id) }}">show</a>
 
+                                    @can('edit permission')
+                                    <a class="btn btn-primary btn-sm"
+                                       href="{{ route('roles.edit', $role->id) }}">edit</a>
+                                    @endcan
 
-                                            <a class="btn btn-primary btn-sm"
-                                               href="{{ route('roles.edit', $role->id) }}">edit</a>
-
-
-                                        @if($role->name !== 'owner')
-
-                                            <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
-                                               data-role_id="{{ $role->id }}"
-                                               data-role_name="{{ $role->name }}"
-                                               data-toggle="modal" href="#modaldemo9" title="Delete"> delete
-                                            </a>
-                                        @endif
-
+                                    @can('delete permission')
+                                    @if($role->name !== 'owner' )
+                                        <a class="modal-effect btn btn-sm btn-danger" data-effect="effect-scale"
+                                           data-role_id="{{ $role->id }}"
+                                           data-role_name="{{ $role->name }}"
+                                           data-toggle="modal" href="#modaldemo9" title="Delete"> delete
+                                        </a>
+                                    @endif
+                                    @endcan
                                     </td>
                                 </tr>
                             @endforeach

@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Exports\InvoicesExport;
 use App\Exports\PaidInvoicesExport;
 use App\Exports\UnpaidInvoicesExport;
+use App\Http\Requests\StoreProduct;
+use App\Http\Requests\StroeInvoice;
+use App\Http\Requests\UpdateInvoice;
+use App\Http\Requests\UpdateStatus;
+use App\Http\traits\UploadFile;
 use App\Models\invoice_attachment;
 use App\Models\invoice_detail;
 use App\Models\Invoices;
@@ -22,12 +27,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class InvoicesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    use UploadFile;
     public function index()
     {
-        $invoices = Invoices::get();
+        $invoices = Invoices::with('section')->get();
         return view('invoices.invoices',compact('invoices'));
     }
 
@@ -43,10 +46,11 @@ class InvoicesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StroeInvoice $request)
     {
         // create new invoice
-        Invoices::create([
+    DB::transaction(function () use( $request){
+       $latestOne = Invoices::create([
          "invoice_number"     => $request->invoice_number ,
          "invoice_date"       => ( date('Y-m-d',strtotime($request->invoice_date))) ,
          "due_date"           => ( date('Y-m-d',strtotime($request->due_date))) ,
@@ -63,8 +67,9 @@ class InvoicesController extends Controller
          "note"               => $request->note
         ]);
             // create invoice details throw last id add to invoices table
-        $newInvoice_id = Invoices::latest()->first()->id;
-        invoice_detail::create([
+        $newInvoice_id = $latestOne->id;
+
+        DB::table('invoice_details')->insert([
             'invoice_number'=> $request->invoice_number,
             'invoice_id'    => $newInvoice_id,
             'status'        => 'unpaid',
@@ -73,65 +78,50 @@ class InvoicesController extends Controller
             'section'       =>  $request->Section ,
             'note'          =>  $request->note ,
             'user'          =>  ( Auth::user()->name ),
+            'created_at'    =>  ( now()),
         ]);
 
             // create invoice attachment = it's nullable()
-        if ($request->hasFile('pic')){
-
+        if ($request->hasFile('pic'))  {
             $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-             $request->validate([
-                'pic' => 'required|mimes:jpeg,png,jpg,pdf|max:2048',
-             ],[
-               'pic.mimes' => 'invoice saved but Attachment not  ',
-             ]);
+             $request->validate(
+                 ['pic' => 'required|mimes:jpeg,png,jpg,pdf|max:2048',],
+                 ['pic.mimes' => 'invoice saved but Attachment not  ', ]
+             );
 
-            $invoice_id = Invoices::latest()->first()->id; // that attach related to
-
-            // get file from request and get its name
-            $file = $request->file('pic');
-            $file_name = $file->getClientOriginalName();
-
-            $unique_name = date('ymd').rand(100,10000).$file_name;
-
-
-            invoice_attachment::create([
+            $unique_name = $this->UploadFile($request->file('pic') ,Invoices::File_PATH.$request->invoice_number);
+            DB::table('invoice_attachments')->insert([
                 'file_name'     => $unique_name ,
                 'invoice_number'=> $request->invoice_number ,
                 'user'          => (Auth::user()->name),
-                'invoice_id'    => $invoice_id,
+                'invoice_id'    => $newInvoice_id,
+                'created_at'    =>  ( now()),
             ]);
 
-            $file->move(public_path('attachments/'.$request->invoice_number),$unique_name);
         }
-        $invoice = Invoices::latest()->first(); // that attach related to
 
-        $user = User::first();
-        Notification::send($user , new AddInvoice($invoice->id));
+        $invoice = Invoices::latest()->first(); // that attach related to
+        /*//Notification::send(Auth::user() , new AddInvoice($invoice->id));*/
 
         $users = User::get(); // to all users
-        Notification::send($users , new NewInvoiceNotification($invoice));
+        Notification::send($users , new NewInvoiceNotification($invoice) ); // after Commit
 
-
+    });
 
         return redirect()->route('invoices.index')->with('success','invoice added successfully');
-
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function allRead( )
     {
         foreach (\auth()->user()->unreadNotifications as $notification) {
             $notification->markAsRead();
         }
         return back();
-
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
+
     public function edit($invoice)
     {
         $show_invoice = Invoices::findOrFail($invoice);
@@ -139,43 +129,41 @@ class InvoicesController extends Controller
         return view('invoices.edit' , compact('show_invoice','sections'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $invoice)
+    public function update(UpdateInvoice $request, $invoice)
     {
 
-        // create new invoice
-        Invoices::where('id','=',$invoice)
-            ->update([
-            "invoice_date"       => ( date('Y-m-d',strtotime($request->invoice_date))) ,
-            "due_date"           => ( date('Y-m-d',strtotime($request->due_date))) ,
-            "product"            => $request->product ,
-            "section_id"         => $request->Section ,
-            "amount_collection"  => $request->Amount_collection ,
-            "amount_commission"  => $request->Amount_Commission ,
-            "discount"           => $request->Discount,
-            "value_vat"          => $request->Value_VAT ,
-            "rate_vat"           => $request->Rate_VAT,
-            "total"              => $request->Total ,
-            "note"               => $request->note
-        ]);
-
-        // update invoice_details
-        invoice_detail::where('invoice_id',$invoice )->update([
-            'product'       =>  $request->product ,
-            'section'       =>  $request->Section ,
-            'note'          =>  $request->note ,
-            'user'          =>  ( Auth::user()->name ),
-        ]);
+        DB::transaction(function () use ($request, $invoice){
+            DB::table('Invoices')
+                ->where('id',$invoice)
+                ->update([
+                "invoice_date"       => ( date('Y-m-d',strtotime($request->invoice_date))) ,
+                "due_date"           => ( date('Y-m-d',strtotime($request->due_date))) ,
+                "product"            => $request->product ,
+                "section_id"         => $request->Section ,
+                "amount_collection"  => $request->Amount_collection ,
+                "amount_commission"  => $request->Amount_Commission ,
+                "discount"           => $request->Discount,
+                "value_vat"          => $request->Value_VAT ,
+                "rate_vat"           => $request->Rate_VAT,
+                "total"              => $request->Total ,
+                "note"               => $request->note,
+                'updated_at'    =>  ( now()),
+            ]);
+            // update invoice_details
+            DB::table('invoice_details')
+                ->where('invoice_id',$invoice )
+                ->update([
+                'product'       =>  $request->product ,
+                'section'       =>  $request->Section ,
+                'note'          =>  $request->note ,
+                'user'          =>  ( Auth::user()->name ),
+                'updated_at'    =>  ( now()),
+            ]);
+        });
 
         return to_route('invoices.index')->with('updated','Editing Done');
-
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($invoice)
     {
        $check = Invoices::findOrfail($invoice);
@@ -204,48 +192,46 @@ class InvoicesController extends Controller
         return view('invoices.editStatus',compact('show_invoice'));
     }
 
-    public function updateStatus(Request $request , $invoice){
-        // validation
+    public function updateStatus(UpdateStatus $request , $invoice){
+
         $get_invoice= Invoices::findOrFail($invoice);
 
-        $status = ($request->status == "1") ? 'paid': 'partially_paid  ' ;
+        DB::transaction(function () use ( $request , $get_invoice ,$invoice){
+            $status = ($request->status == "1") ? 'paid': 'partially_paid  ' ;
+            $get_invoice->update([
+                    'status'        => $status,
+                    'value_status'  => $request->status ,
+                    'payment_date'  => (date('Y-m-d',strtotime($request->Payment_date))) ,
+                ]);
 
-        $get_invoice->update([
+            // create new invoice_details for new status
+           DB::table('invoice_details')->insert([
+                'invoice_id'    => $invoice,
                 'status'        => $status,
-                'value_status'  => $request->status ,
+                'value_status'  => $request->status,
                 'payment_date'  => (date('Y-m-d',strtotime($request->Payment_date))) ,
+                'invoice_number'=> $get_invoice->invoice_number,
+                'product'       => $get_invoice->product ,
+                'section'       => $get_invoice->section_id ,
+                'note'          => $get_invoice->note ,
+                'user'          => ( Auth::user()->name ),
+                'created_at'    =>  now() ,
             ]);
-        // create new invoice_details for new status
-
-
-        invoice_detail::create([
-            'invoice_id'    => $invoice,
-            'status'        => $status,
-            'value_status'  => $request->status,
-            'payment_date'  => (date('Y-m-d',strtotime($request->Payment_date))) ,
-            'invoice_number'=> $get_invoice->invoice_number,
-            'product'       => $get_invoice->product ,
-            'section'       => $get_invoice->section_id ,
-            'note'          => $get_invoice->note ,
-            'user'          => ( Auth::user()->name ),
-
-        ]);
-
+        });
         return to_route('invoices.index')->with('statusUpdated','Status has been updated ');
-
     }
 
 
     public function  paidInvoice(){
-        $invoices = Invoices::where('value_status' , '1')->get();
+        $invoices = Invoices::paid()->get();
         return view('invoices.paidInvoices',compact('invoices'));
     }
     public function unPaidInvoice (){
-        $invoices = Invoices::where('value_status' , '2')->get();
+        $invoices = Invoices::unpaid()->get();
         return view('invoices.unPaidInvoices',compact('invoices'));
     }
     public function  partiallyPaidInvoice(){
-        $invoices = Invoices::where('value_status' , '3')->get();
+        $invoices = Invoices::partiallyPaid()->get();
         return view('invoices.partiallyPaidInvoices',compact('invoices'));
 
     }
@@ -256,8 +242,7 @@ class InvoicesController extends Controller
     }
 
     public function export(){
-
-        return Excel::download(new InvoicesExport, 'invoices.xlsx');
+        return Excel::download(new InvoicesExport, date('m-d',strtotime(now())).'invoices.xlsx');
     }
     public function export_paid(){
         return Excel::download(new PaidInvoicesExport, date('y-m-d',strtotime(now())).'PaidInvoices.xlsx');
@@ -267,6 +252,7 @@ class InvoicesController extends Controller
     }
 
 
+    // ajax code
     public function getProducts($id){
         $products = DB::table('products')->where('section_id','=',$id)->pluck('product_name','id');
         return json_encode($products);
